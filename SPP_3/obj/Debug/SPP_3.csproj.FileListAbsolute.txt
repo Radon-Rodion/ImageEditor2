@@ -1,0 +1,15 @@
+F:\Coding\C#\SPP_3\SPP_3\bin\Debug\SPP_3.exe.config
+F:\Coding\C#\SPP_3\SPP_3\bin\Debug\SPP_3.exe
+F:\Coding\C#\SPP_3\SPP_3\bin\Debug\SPP_3.pdb
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.csproj.AssemblyReference.cache
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\MainWindow.g.cs
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\App.g.cs
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3_MarkupCompile.cache
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3_MarkupCompile.lref
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\MainWindow.baml
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.g.resources
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.Properties.Resources.resources
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.csproj.GenerateResource.cache
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.csproj.CoreCompileInputs.cache
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.exe
+F:\Coding\C#\SPP_3\SPP_3\obj\Debug\SPP_3.pdb

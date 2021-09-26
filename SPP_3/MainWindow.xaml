@@ -1,0 +1,100 @@
+﻿<Window x:Class="SPP_3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SPP_3"
+        mc:Ignorable="d"
+        Title="Image Editor" Height="434" Width="760">
+    <ListView>
+        <Menu VerticalAlignment="Top" Height="20">
+            <Menu.ContextMenu>
+                <ContextMenu/>
+            </Menu.ContextMenu>
+        </Menu>
+        <Grid VerticalAlignment="Top" >
+            <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="2">
+                <WrapPanel>
+                    <WrapPanel x:Name="Colors" MaxWidth="175">
+                        <Button x:Name="BlackButton" Background="#000" Width="25" Height="25" Click="ColorButton_Click"/>
+                        <Button x:Name="DarkGreyButton" Background="#333" Width="25" Height="25"/>
+                        <Button x:Name="GreyButton" Background="#666" Width="25" Height="25"/>
+                        <Button x:Name="LightGreyButton" Background="#999" Width="25" Height="25"/>
+                        <Button x:Name="LightButton" Background="#ccc" Width="25" Height="25"/>
+                        <Button x:Name="WhiteButton" Background="#fff" Width="25" Height="25"/>
+                        <Button x:Name="CooperButton" Background="#f30" Width="25" Height="25"/>
+
+                        <Button x:Name="DarkRedButton" Background="#400" Width="25" Height="25"/>
+                        <Button x:Name="VineButton" Background="#800" Width="25" Height="25"/>
+                        <Button x:Name="RedButton" Background="#f00" Width="25" Height="25"/>
+                        <Button x:Name="PinkButton" Background="#f44" Width="25" Height="25"/>
+                        <Button x:Name="LightPinkButton" Background="#f88" Width="25" Height="25"/>
+                        <Button x:Name="LightYellowButton" Background="#ff6" Width="25" Height="25"/>
+                        <Button x:Name="OrangeButton" Background="#f70" Width="25" Height="25"/>
+
+                        <Button x:Name="DarkGreenButton" Background="#040" Width="25" Height="25"/>
+                        <Button x:Name="EmeraldButton" Background="#080" Width="25" Height="25"/>
+                        <Button x:Name="GreenButton" Background="#0f0" Width="25" Height="25"/>
+                        <Button x:Name="LightGreenButton" Background="#4f0" Width="25" Height="25"/>
+                        <Button x:Name="LimeButton" Background="#8f0" Width="25" Height="25"/>
+                        <Button x:Name="YellowButton" Background="#ff0" Width="25" Height="25"/>
+                        <Button x:Name="PurpleButton" Background="#f0f" Width="25" Height="25"/>
+
+                        <Button x:Name="DarkBlueButton" Background="#004" Width="25" Height="25"/>
+                        <Button x:Name="DeepBlueButton" Background="#008" Width="25" Height="25"/>
+                        <Button x:Name="BlueButton" Background="#00f" Width="25" Height="25"/>
+                        <Button x:Name="LightBlueButton" Background="#06f" Width="25" Height="25"/>
+                        <Button x:Name="SkyButton" Background="#0cf" Width="25" Height="25"/>
+                        <Button x:Name="SeaWaveButton" Background="#6ff" Width="25" Height="25"/>
+                        <Button x:Name="DeepPurpleButton" Background="#80f" Width="25" Height="25"/>
+                    </WrapPanel>
+                    <GroupBox Header="PenColor">
+                        <Button x:Name="PenColor" Height="70" Width="50" Background="#000" Click="ColorControl_Click"/>
+                    </GroupBox>
+                    <GroupBox Header="BrushColor">
+                        <Button x:Name="BrushColor" Height="70" Width="50" Background="#fff" Click="ColorControl_Click"/>
+                    </GroupBox>
+                    <WrapPanel MaxWidth="210">
+                        <Button x:Name="RotateButton" Content="Rotate" Width="70" Height="30"/>
+                        <Button x:Name="ResizeButton" Content="Resize" Width="70" Height="30"/>
+                        <Button x:Name="ClipButton" Content="Clip" Width="70" Height="30"/>
+                        <Button x:Name="ReflectHorButton" Content="Reflect Hor" Width="70" Height="30"/>
+                        <Button x:Name="ReflectVert" Content="Reflect Vert" Width="70" Height="30"/>
+                        <Button x:Name="PenDrawButton" Content="Pen Draw" Width="70" Height="30"/>
+
+                        <GroupBox Header="Pen Width">
+                            <WrapPanel>
+                                <Slider x:Name="PenWidthSlider" Width="150" Minimum="1" SmallChange="1" LargeChange="5" ValueChanged="PenWidthSlider_ValueChanged"/>
+                                <TextBox x:Name="PenWidthText" Width="30" Margin="10,0,0,0" Text="1" MaxLines="1" TextAlignment="Right" TextChanged="PenWidthText_TextChanged"/>
+                            </WrapPanel>
+                        </GroupBox>
+                    </WrapPanel>
+                    <WrapPanel MaxWidth="210">
+                        <GroupBox Header="Saturation">
+                            <WrapPanel>
+                                <Slider x:Name="SaturationSlider" Width="150" Minimum="-127" Maximum="127" SmallChange="2" LargeChange="10" ValueChanged="SaturationSlider_ValueChanged" />
+                                <TextBox x:Name="SaturationText" Width="30" Margin="10,0,0,0" Text="0" MaxLines="1" TextAlignment="Right" TextChanged="SaturationText_TextChanged"/>
+                            </WrapPanel>
+                        </GroupBox>
+                        <GroupBox Header="Brightness">
+                            <WrapPanel>
+                                <Slider x:Name="BrightnessSlider" Width="150" Minimum="-127" Maximum="127" SmallChange="2" LargeChange="10" ValueChanged="BrightnessSlider_ValueChanged" />
+                                <TextBox x:Name="BrightnessText" Width="30" Margin="10,0,0,0" Text="0" MaxLines="1" TextAlignment="Right" TextChanged="BrightnessText_TextChanged"/>
+                            </WrapPanel>
+                        </GroupBox>
+                        <GroupBox Header="Contrast">
+                            <WrapPanel>
+                                <Slider x:Name="ContrastSlider" Width="150" Minimum="-127" Maximum="127" SmallChange="2" LargeChange="10" ValueChanged="ContrastSlider_ValueChanged" />
+                                <TextBox x:Name="ContrastText" Width="30" Margin="10,0,0,0" Text="0" MaxLines="1" TextAlignment="Right" TextChanged="ContrastText_TextChanged"/>
+                            </WrapPanel>
+                        </GroupBox>
+                    </WrapPanel>
+
+                </WrapPanel>
+            </Border>
+        </Grid>
+        <Canvas>
+            <Image x:Name="picture" />
+        </Canvas>
+    </ListView>
+</Window>
