@@ -1,0 +1,21 @@
+﻿<Window x:Class="SPP_3.ScaleForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SPP_3"
+        mc:Ignorable="d"
+        Title="ScaleForm" Height="150" Width="300" ResizeMode="NoResize">
+    <StackPanel>
+        <GroupBox Header="Width">
+            <TextBox x:Name="WidthBox" TextChanged="TextBox_TextChanged" />
+        </GroupBox>
+        <GroupBox Header="Height">
+            <TextBox x:Name="HeightBox" TextChanged="TextBox_TextChanged" />
+        </GroupBox>
+        <WrapPanel HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button Content="Resize" Margin="0,0,10,0" Click="ResizeBtn_Click"/>
+            <Button Content="Cancel" Click="CancelBtn_Click"/>
+        </WrapPanel>
+    </StackPanel>
+</Window>

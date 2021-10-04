@@ -52,7 +52,7 @@ namespace SPP_3
             return false;
         }
 
-        public void SliderToZero()
+        public void SlidersToZero()
         {
             sliders.contrastSlider.Value = 0;
             sliders.brightnessSlider.Value = 0;

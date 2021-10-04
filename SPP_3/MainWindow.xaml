@@ -8,9 +8,15 @@
         Title="Image Editor" Height="434" Width="760">
     <ListView>
         <Menu VerticalAlignment="Top" Height="20">
-            <Menu.ContextMenu>
-                <ContextMenu/>
-            </Menu.ContextMenu>
+            <MenuItem Header="File">
+                <MenuItem x:Name="NewFileBtn" Header="New"></MenuItem>
+                <MenuItem x:Name="OpenFileBtn" Header="Open" Click="OpenFileBtn_Click"></MenuItem>
+                <MenuItem x:Name="SaveFileBtn" Header="Save"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem x:Name="AboutBtn" Header="About"></MenuItem>
+                <MenuItem x:Name="ExitBtn" Header="Exit"></MenuItem>
+            </MenuItem>
         </Menu>
         <Grid VerticalAlignment="Top" >
             <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="2">
@@ -55,12 +61,12 @@
                         <Button x:Name="BrushColor" Height="70" Width="50" Background="#fff" Click="ColorControl_Click"/>
                     </GroupBox>
                     <WrapPanel MaxWidth="210">
-                        <Button x:Name="RotateButton" Content="Rotate" Width="70" Height="30"/>
-                        <Button x:Name="ResizeButton" Content="Resize" Width="70" Height="30"/>
-                        <Button x:Name="ClipButton" Content="Clip" Width="70" Height="30"/>
-                        <Button x:Name="ReflectHorButton" Content="Reflect Hor" Width="70" Height="30"/>
-                        <Button x:Name="ReflectVert" Content="Reflect Vert" Width="70" Height="30"/>
-                        <Button x:Name="PenDrawButton" Content="Pen Draw" Width="70" Height="30"/>
+                        <Button x:Name="RotateLeftButton" Content="90° Left" Width="70" Height="30" Click="RotateLeftButton_Click"/>
+                        <Button x:Name="RotateRightButton" Content="90° Right" Width="70" Height="30" Click="RotateRightButton_Click"/>
+                        <Button x:Name="ResizeButton" Content="Resize" Width="70" Height="30" Click="ResizeButton_Click"/>
+                        <Button x:Name="ReflectHorButton" Content="Reflect Hor" Width="70" Height="30" Click="ReflectHorButton_Click"/>
+                        <Button x:Name="ReflectVertButton" Content="Reflect Vert" Width="70" Height="30" Click="ReflectVertButton_Click"/>
+                        <Button x:Name="ClipButton" Content="Clip" Width="70" Height="30" Click="ClipButton_Click"/>
 
                         <GroupBox Header="Pen Width">
                             <WrapPanel>
@@ -93,7 +99,9 @@
                 </WrapPanel>
             </Border>
         </Grid>
-        <Canvas>
+        <Canvas x:Name="canvas" MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove" MouseUp="Canvas_MouseUp">
+            <!--Rectangle Fill="LightBlue" Width="200" Height="100" Margin="10" Width="200" Height="100" Margin="10" >
+            </Rectangle-->
             <Image x:Name="picture" />
         </Canvas>
     </ListView>
