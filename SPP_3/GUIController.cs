@@ -14,16 +14,19 @@ namespace SPP_3
         (Slider contrastSlider, Slider brightnessSlider, Slider saturationSlider) sliders;
         Button penColorControl;
         Button colorController;
+        bool needMessageProcession;
 
         public GUIController(Button penColorControl, (Slider contrastSlider, Slider brightnessSlider, Slider saturationSlider) sliders)
         {
             this.colorController = this.penColorControl = penColorControl;
             this.sliders = sliders;
+            needMessageProcession = true;
         }
 
-        public void SliderChangesTextBox(Slider slider, TextBox box)
+        public bool SliderChangesTextBox(Slider slider, TextBox box)
         {
             box.Text = $"{System.Convert.ToInt32(slider.Value)}";
+            return needMessageProcession;
         }
 
         public void TextBoxChangesSlider(Slider slider, TextBox box)
@@ -54,9 +57,11 @@ namespace SPP_3
 
         public void SlidersToZero()
         {
+            needMessageProcession = false;
             sliders.contrastSlider.Value = 0;
             sliders.brightnessSlider.Value = 0;
             sliders.saturationSlider.Value = 0;
+            needMessageProcession = true;
         }
 
         public void SetColorControl(Button newColorControl)

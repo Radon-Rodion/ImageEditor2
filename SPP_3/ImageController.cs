@@ -8,17 +8,24 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace SPP_3
 {
-    class ImageController
+    public class ImageController
     {
         Image picture;
         WriteableBitmap bitmap;
+        Stack<BitmapSource> undo;
+        Stack<BitmapSource> redo;
+        //int ind;
 
-        public ImageController(Image picture)
+        public ImageController(Image picture = null)
         {
             this.picture = picture;
+            undo = new Stack<BitmapSource>();
+            redo = new Stack<BitmapSource>();
+            //ind = 0;
         }
 
         public void Rotate(double angle)
@@ -44,17 +51,13 @@ namespace SPP_3
 
         private void TransformImage(Transform transform)
         {
-            // Create the TransformedBitmap to use as the Image source.
             TransformedBitmap tb = new TransformedBitmap();
 
-            // Properties must be set between BeginInit and EndInit calls.
             tb.BeginInit();
             tb.Source = bitmap;
-            // Set image transformatrion.
             tb.Transform = transform;
             tb.EndInit();
 
-            // Set the Image source.
             UpdateBitmap(tb);
         }
 
@@ -63,57 +66,45 @@ namespace SPP_3
             //Open Image
             BitmapImage bitmapImage = new BitmapImage();
 
-            // BitmapImage.UriSource must be in a BeginInit/EndInit block
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri(address);
-
-            // To save significant application memory, set the DecodePixelWidth or
-            // DecodePixelHeight of the BitmapImage value of the image source to the desired
-            // height or width of the rendered image. If you don't do this, the application will
-            // cache the image as though it were rendered as its normal size rather then just
-            // the size that is displayed.
-            // Note: In order to preserve aspect ratio, set DecodePixelWidth
-            // or DecodePixelHeight but not both.
-            //myBitmapImage.DecodePixelWidth = 200;
+            //bitmapImage.DecodePixelWidth = 750;
             bitmapImage.EndInit();
 
             UpdateBitmap(bitmapImage);
         }
 
-        public void DrawPoint(int x, int y)
+        public void SaveImage(string address, string format)
         {
-
-            try
+            BitmapEncoder encoder;
+            switch (format)
             {
-                // Reserve the back buffer for updates.
-                bitmap.Lock();
-
-                unsafe
-                {
-                    // Get a pointer to the back buffer.
-                    IntPtr pBackBuffer = bitmap.BackBuffer;
-
-                    // Find the address of the pixel to draw.
-                    pBackBuffer += y * bitmap.BackBufferStride;
-                    pBackBuffer += x * 4;
-
-                    // Compute the pixel's color.
-                    /*int color_data = 255 << 16; // R
-                    color_data |= 128 << 8;   // G
-                    color_data |= 255 << 0;   // B*/
-
-                    // Assign the color data to the pixel.
-                    *((int*)pBackBuffer) = 0;//color_data;
-                }
-
-                // Specify the area of the bitmap that changed.
-                bitmap.AddDirtyRect(new Int32Rect(x, y, 1, 1));
+                case "bmp":
+                    encoder = new BmpBitmapEncoder();
+                    break;
+                case "jpg":
+                    encoder = new JpegBitmapEncoder();
+                    break;
+                case "png":
+                    encoder = new PngBitmapEncoder();
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid format: {format}");
             }
-            finally
-            {
-                // Release the back buffer and make it available for display.
-                bitmap.Unlock();
-            }
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            using (FileStream fileStream = new FileStream(address, FileMode.Create))
+                encoder.Save(fileStream);
+        }
+
+        public void NewImage(Brush background)
+        {
+            Rectangle rect = new Rectangle();
+            rect.Width = 750;
+            rect.Height = 500;
+            rect.Fill = background;
+            RenderTargetBitmap renderBmp = new RenderTargetBitmap(750, 500, 96d, 96d, PixelFormats.Pbgra32);
+            renderBmp.Render(rect);
+            UpdateBitmap(renderBmp);
         }
 
         public void CropImage(Int32Rect cropRect)
@@ -122,10 +113,50 @@ namespace SPP_3
             UpdateBitmap(cropBmp);
         }
 
-        public void UpdateBitmap(BitmapSource bmpSource)
+        public void Undo()
+        {
+            try
+            {
+                if (undo.Peek() == null) return;
+                BitmapSource bmp = undo.Pop();
+                redo.Push(bitmap);
+                UpdateWithoutStack(bmp);
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("Nothing to undo");
+            }
+        }
+
+        public void Redo()
+        {
+            try
+            {
+                if (redo.Peek() == null) return;
+                BitmapSource bmp = redo.Pop();
+                undo.Push(bitmap);
+                UpdateWithoutStack(bmp);
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("Nothing to redo");
+            }
+        }
+
+        private void UpdateWithoutStack(BitmapSource bmpSource)
         {
             bitmap = new WriteableBitmap(bmpSource);
-            picture.Source = bitmap;
+            if (picture != null)
+                picture.Source = bitmap;
+        }
+
+        private void UpdateBitmap(BitmapSource bmpSource)
+        {
+            undo.Push(bitmap);
+            redo.Clear();
+            UpdateWithoutStack(bmpSource);
+            //ind++;
+            //SaveImage($"G:/tempor/tempImg{ind}.bmp");
         }
 
         public void UpdateFromCanvas(Canvas canvas)
@@ -139,12 +170,6 @@ namespace SPP_3
             canvas.Children.Add(picture);
 
             MaskFactory.DropRect(); //in order to definitely have new mask rectangle next time
-        }
-
-        public FormatConvertedBitmap GetSaturationMask(double decVal)
-        {
-            FormatConvertedBitmap formatBitmap = new FormatConvertedBitmap(bitmap, PixelFormats.Gray16, BitmapPalettes.BlackAndWhite, decVal);
-            return formatBitmap;
         }
 
         public Rectangle GetBrightnessMaskRect(double brightnessFactor)

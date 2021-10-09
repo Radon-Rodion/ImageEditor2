@@ -9,13 +9,13 @@
     <ListView>
         <Menu VerticalAlignment="Top" Height="20">
             <MenuItem Header="File">
-                <MenuItem x:Name="NewFileBtn" Header="New"></MenuItem>
+                <MenuItem x:Name="NewFileBtn" Header="New" Click="NewFileBtn_Click"></MenuItem>
                 <MenuItem x:Name="OpenFileBtn" Header="Open" Click="OpenFileBtn_Click"></MenuItem>
-                <MenuItem x:Name="SaveFileBtn" Header="Save"></MenuItem>
+                <MenuItem x:Name="SaveFileBtn" Header="Save" Click="SaveFileBtn_Click"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem x:Name="AboutBtn" Header="About"></MenuItem>
-                <MenuItem x:Name="ExitBtn" Header="Exit"></MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem x:Name="UndoBtn" Header="Undo" Click="UndoBtn_Click"></MenuItem>
+                <MenuItem x:Name="RedoBtn" Header="Redo" Click="RedoBtn_Click"></MenuItem>
             </MenuItem>
         </Menu>
         <Grid VerticalAlignment="Top" >

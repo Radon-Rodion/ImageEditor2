@@ -23,6 +23,7 @@ namespace SPP_3
     {
         GUIController guiControl;
         ImageController imageControl;
+        CanvasController canvasControl;
 
         bool mouseClicked;
         int instrument;
@@ -47,6 +48,7 @@ namespace SPP_3
 
             guiControl = new GUIController(PenColor, (ContrastSlider, BrightnessSlider, SaturationSlider));
             imageControl = new ImageController(picture);
+            canvasControl = new CanvasController(canvas);
 
             foreach (UIElement el in Colors.Children)
             {
@@ -60,11 +62,12 @@ namespace SPP_3
         private void ContrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (guiControl == null) return;
-            guiControl.SliderChangesTextBox(ContrastSlider, ContrastText);
-
-            Instrument = -3;
-            Rectangle rect = imageControl.GetContrastMaskRect(ContrastSlider.Value);
-            if (!canvas.Children.Contains(rect)) canvas.Children.Add(rect);
+            if (guiControl.SliderChangesTextBox(ContrastSlider, ContrastText)) //message procession needed
+            {
+                Instrument = -3;
+                Rectangle rect = imageControl.GetContrastMaskRect(ContrastSlider.Value);
+                canvasControl.CheckAndAdd(rect);
+            }
         }
 
         private void ContrastText_TextChanged(object sender, TextChangedEventArgs e)
@@ -76,11 +79,12 @@ namespace SPP_3
         private void BrightnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (guiControl == null) return;
-            guiControl.SliderChangesTextBox(BrightnessSlider, BrightnessText);
-
-            Instrument = -2;
-            Rectangle rect = imageControl.GetBrightnessMaskRect(BrightnessSlider.Value);
-            if(!canvas.Children.Contains(rect)) canvas.Children.Add(rect);
+            if (guiControl.SliderChangesTextBox(BrightnessSlider, BrightnessText)) //message procession needed
+            {
+                Instrument = -2;
+                Rectangle rect = imageControl.GetBrightnessMaskRect(BrightnessSlider.Value);
+                canvasControl.CheckAndAdd(rect);
+            }
         }
 
         private void BrightnessText_TextChanged(object sender, TextChangedEventArgs e)
@@ -92,11 +96,12 @@ namespace SPP_3
         private void SaturationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (guiControl == null) return;
-            guiControl.SliderChangesTextBox(SaturationSlider, SaturationText);
-
-            Instrument = -1;
-            Rectangle rect = imageControl.GetSaturationMaskRect(SaturationSlider.Value);
-            if (!canvas.Children.Contains(rect)) canvas.Children.Add(rect);
+            if (guiControl.SliderChangesTextBox(SaturationSlider, SaturationText)) //message procession needed
+            {
+                Instrument = -1;
+                Rectangle rect = imageControl.GetSaturationMaskRect(SaturationSlider.Value);
+                canvasControl.CheckAndAdd(rect);
+            }
         }
 
         private void SaturationText_TextChanged(object sender, TextChangedEventArgs e)
@@ -109,7 +114,6 @@ namespace SPP_3
         {
             if (guiControl == null) return;
             guiControl.SliderChangesTextBox(PenWidthSlider, PenWidthText);
-            /*controller.SetPenWidth(lineWidthTrack.Value);*/
         }
 
         private void PenWidthText_TextChanged(object sender, TextChangedEventArgs e)
@@ -128,18 +132,6 @@ namespace SPP_3
         {
             if (guiControl == null) return;
             guiControl.ChangeColor(((Button)e.OriginalSource).Background);
-        }
-
-        private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
-            bool? result = openFileDlg.ShowDialog();
-            if (result == true)
-            {
-                imageControl.OpenImage(openFileDlg.FileName);
-               
-            }
-            Instrument = 0;
         }
 
         private void RotateLeftButton_Click(object sender, RoutedEventArgs e)
@@ -185,16 +177,11 @@ namespace SPP_3
             switch (instrument)
             {
                 case 0:     //pen
-                    PenDrawer drawer = new PenDrawer(e.GetPosition(canvas));
-                    Line line = drawer.LineTo(e.GetPosition(canvas));
-                    line.Stroke = PenColor.Background;
-                    line.Fill = PenColor.Background;
-                    line.StrokeThickness = PenWidthSlider.Value;
-                    canvas.Children.Add(line);
+                    canvasControl.StartPenDrawing(e.GetPosition(canvas));
+                    canvasControl.LineToPoint(e.GetPosition(canvas), PenColor.Background, PenWidthSlider.Value);
                     break;
                 case 1:     //cropping rectangle
-                    SelectionRect selRect = new SelectionRect(e.GetPosition(canvas));
-                    canvas.Children.Add(selRect.GetRectFigure());
+                    canvasControl.StartSelection(e.GetPosition(canvas));
                     break;
             }        
         }
@@ -205,17 +192,10 @@ namespace SPP_3
             switch (instrument)
             {
                 case 0:     //pen
-                    PenDrawer drawer = PenDrawer.GetPenDrawer();
-                    Line line = drawer.LineTo(e.GetPosition(canvas));
-                    line.Stroke = PenColor.Background;
-                    line.Fill = PenColor.Background;
-                    line.StrokeThickness = PenWidthSlider.Value;
-                    canvas.Children.Add(line);
-                    //imageControl.DrawPoint((int)e.GetPosition(canvas).X, (int)e.GetPosition(canvas).Y);
+                    canvasControl.LineToPoint(e.GetPosition(canvas), PenColor.Background, PenWidthSlider.Value);
                     break;
                 case 1:     //cropping rectangle
-                    SelectionRect selRect = SelectionRect.GetSelectionRect();
-                    selRect.SetSecondPoint(e.GetPosition(canvas));
+                    canvasControl.ContinueSelection(e.GetPosition(canvas));
                     break;
             }
         }
@@ -229,99 +209,63 @@ namespace SPP_3
                     imageControl.UpdateFromCanvas(canvas);
                     break;
                 case 1:     //cropping rectangle
-                    SelectionRect selRect = SelectionRect.GetSelectionRect();
-                    canvas.Children.Remove(selRect.GetRectFigure());
-                    imageControl.CropImage(selRect.GetSelectionArea());
-                    Instrument = 0;
+                    Int32Rect selectedRect = canvasControl.FinishSelection();
+                    imageControl.CropImage(selectedRect);
+                    instrument = 0;
                     break;
             }
         }
 
-        private class SelectionRect
+        private void NewFileBtn_Click(object sender, RoutedEventArgs e)
         {
-            private static SelectionRect selectionRect;
-            private Rectangle rect;
-            double xFirst, yFirst;
+            imageControl.NewImage(BrushColor.Background);
+        }
 
-            public SelectionRect(Point firstPoint)
+        private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Instrument = 0;
+            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+            bool? result = openFileDlg.ShowDialog();
+            if (result == true)
             {
-                this.xFirst = firstPoint.X;
-                this.yFirst = firstPoint.Y;
+                imageControl.OpenImage(openFileDlg.FileName);
 
-                rect = new Rectangle();
-                ChangeRectangle(xFirst, yFirst, 0, 0);
-                rect.Stroke = Brushes.Black;
-                rect.StrokeThickness = 3;
-
-                selectionRect = this;
             }
-            public static SelectionRect GetSelectionRect()
+            
+        }
+
+        private void SaveFileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Instrument = 0;
+            Microsoft.Win32.SaveFileDialog saveFileDlg = new Microsoft.Win32.SaveFileDialog
             {
-                return selectionRect;
-            }
-
-            public void SetSecondPoint(Point secondPoint)
+                Filter = "BMP Image(*.bmp)|*.bmp|JPG Image(*.jpg)|*.jpg|PNG Image(*.png)|*.png"
+            };
+            bool? result = saveFileDlg.ShowDialog();
+            if (result == true)
             {
-                double xLeft = secondPoint.X > xFirst ? xFirst : secondPoint.X;
-                double yTop = secondPoint.Y > yFirst ? yFirst : secondPoint.Y;
-
-                double width = Math.Abs(secondPoint.X - xFirst);
-                double height = Math.Abs(secondPoint.Y - yFirst);
-                ChangeRectangle(xLeft, yTop, width, height);
-            }
-
-            private void ChangeRectangle(double xLeft, double yTop, double width, double height)
-            {
-                Canvas.SetLeft(rect, xLeft);
-                Canvas.SetTop(rect, yTop);
-                rect.Width = width;
-                rect.Height = height;
-            }
-
-            public Rectangle GetRectFigure()
-            {
-                return rect;
-            }
-
-            public Int32Rect GetSelectionArea()
-            {
-                int x = System.Convert.ToInt32(Canvas.GetLeft(rect));
-                int y = System.Convert.ToInt32(Canvas.GetTop(rect));
-                int width = System.Convert.ToInt32(rect.Width);
-                int height = System.Convert.ToInt32(rect.Height);
-
-                Int32Rect area = new Int32Rect(x, y, width, height);
-                return area;
+                try
+                {
+                    string fileName = saveFileDlg.FileName;
+                    string extension = fileName.Substring(fileName.Length - 3);
+                    imageControl.SaveImage(fileName, extension);
+                }
+                catch (ArgumentException exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
+                
             }
         }
 
-        private class PenDrawer
+        private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
-            static PenDrawer drawer;
-            Point prevPoint;
+            imageControl.Undo();
+        }
 
-            public PenDrawer(Point point)
-            {
-                prevPoint = point;
-                drawer = this;
-            }
-
-            public static PenDrawer GetPenDrawer()
-            {
-                return drawer;
-            }
-
-            public Line LineTo(Point nextPoint)
-            {
-                Line line = new Line();
-                line.X1 = prevPoint.X;
-                line.Y1 = prevPoint.Y;
-                line.X2 = nextPoint.X;
-                line.Y2 = nextPoint.Y;
-
-                prevPoint = nextPoint;
-                return line;
-            }
+        private void RedoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            imageControl.Redo();
         }
     }
 }
